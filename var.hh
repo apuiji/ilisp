@@ -1,5 +1,6 @@
 #pragma once
 
+#include<concepts>
 #include<string_view>
 #include<variant>
 
@@ -16,11 +17,39 @@ namespace zlt::ilisp {
 
   using Var = std::variant<std::monostate, double, const std::string *, Object *, void *>;
 
+  struct Object {
+    virtual ~Object() = default;
+  };
+
   // cast operations begin
   double toNum(const Var &var) noexcept;
   int toInt(int &dest, const Var &var) noexcept;
   std::string_view toStr(std::string_view &dest, const Var &var) noexcept;
   bool toBool(const Var &var) noexcept;
+
+  template<std::derived_from<Object> T>
+  static inline T *toObj(Var &var) noexcept {
+    auto o = *(Object **) &var;
+    return static_cast<T *>(o);
+  }
+
+  template<std::derived_from<Object> T>
+  static inline const T *toObj(const Var &var) noexcept {
+    auto o = *(const Object **) &var;
+    return static_cast<const T *>(o);
+  }
+
+  template<std::derived_from<Object> T>
+  static inline T *dynamicToObj(Var &var) noexcept {
+    auto o = std::get_if<Object *>(var);
+    return o ? dynamic_cast<T *>(*o) : nullptr;
+  }
+
+  template<std::derived_from<Object> T>
+  static inline const T *dynamicToObj(const Var &var) noexcept {
+    auto o = std::get_if<Object *>(var);
+    return o ? dynamic_cast<const T *>(*o) : nullptr;
+  }
   // cast operations end
 
   // set operations begin

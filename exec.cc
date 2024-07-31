@@ -110,14 +110,19 @@ namespace zlt::ilisp {
     }
     // comparisons end
     // getters begin
-    else if (op == opcode::SET_LOCAL) {
+    else if (op == opcode::GET_LOCAL) {
       int i = readPC();
       sp[0] = bp[i];
       exec();
-    } else if (op == opcode::SET_CLOSURE) {
+    } else if (op == opcode::GET_CLOSURE) {
       int i = readPC();
-
-    }
+      sp[0] = toObj<FunctionObj>(bp[-1])->closures[i];
+      exec();
+    } else if (op == opcode::GET_GLOBAL) {
+      const string *name = readPC();
+      sp[0] = global::defs[name];
+      exec();
+    } else if (op == opcode::GET_REF) {}
     // getters end
     else if (op == opcode::CALL) {
       call();
