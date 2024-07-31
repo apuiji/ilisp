@@ -122,8 +122,39 @@ namespace zlt::ilisp {
       const string *name = readPC();
       sp[0] = global::defs[name];
       exec();
-    } else if (op == opcode::GET_REF) {}
+    } else if (op == opcode::GET_MEMB) {
+      sp[-1] = getMemb(sp[-1], sp[0]);
+      --sp;
+      exec();
+    } else if (op == opcode::GET_REF) {
+      sp[0] = *toPtr<Var *>(sp[0]);
+      exec();
+    }
     // getters end
+    // setters begin
+    else if (op == opcode::SET_LOCAL) {
+      int i = readPC();
+      bp[i] = sp[0];
+      exec();
+    } else if (op == opcode::SET_CLOSURE) {
+      int i = readPC();
+      toObj<FunctionObj>(bp[-1])->closures[i] = sp[0];
+      exec();
+    } else if (op == opcode::SET_GLOBAL) {
+      const string *name = readPC();
+      global::defs[name] = sp[0];
+      exec();
+    } else if (op == opcode::SET_MEMB) {
+      setMemb(sp[-2], sp[-1], sp[0]);
+      sp[-2] = sp[0];
+      sp -= 2;
+      exec();
+    } else if (op == opcode::SET_REF) {
+      *toPtr<Var *>(sp[-1]) = sp[0];
+      --sp;
+      exec();
+    }
+    // setters end
     else if (op == opcode::CALL) {
       call();
       return;
