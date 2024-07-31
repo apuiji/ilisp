@@ -2,7 +2,7 @@
 #include"commons/opcode.hh"
 #include"global.hh"
 #include"ilisp.hh"
-#include"value.hh"
+#include"var.hh"
 
 using namespace std;
 
@@ -19,6 +19,14 @@ namespace zlt::ilisp {
       sp[-1] = toNum(sp[-1]) + toNum(sp[0]);
       --sp;
       exec();
+    } else if (op == opcode::ARITH_SUB) {
+      sp[-1] = toNum(sp[-1]) - toNum(sp[0]);
+      --sp;
+      exec();
+    } else if (op == opcode::ARITH_MUL) {
+      sp[-1] = toNum(sp[-1]) * toNum(sp[0]);
+      --sp;
+      exec();
     } else if (op == opcode::ARITH_DIV) {
       sp[-1] = toNum(sp[-1]) / toNum(sp[0]);
       --sp;
@@ -27,16 +35,8 @@ namespace zlt::ilisp {
       sp[-1] = fmod(toNum(sp[-1]), toNum(sp[0]));
       --sp;
       exec();
-    } else if (op == opcode::ARITH_MUL) {
-      sp[-1] = toNum(sp[-1]) * toNum(sp[0]);
-      --sp;
-      exec();
     } else if (op == opcode::ARITH_POW) {
       sp[-1] = pow(toNum(sp[-1]), toNum(sp[0]));
-      --sp;
-      exec();
-    } else if (op == opcode::ARITH_SUB) {
-      sp[-1] = toNum(sp[-1]) - toNum(sp[0]);
       --sp;
       exec();
     }
@@ -72,17 +72,53 @@ namespace zlt::ilisp {
     }
     // bitwise operations end
     // comparisons begin
-    else if (op == opcode::CMP_3WAY) {
+    else if (op == opcode::CMP_EQ) {
       int diff;
-      if ()
+      setBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff == 0);
+      --sp;
+      exec();
+    } else if (op == opcode::CMP_LT) {
+      int diff;
+      setBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff < 0);
+      --sp;
+      exec();
+    } else if (op == opcode::CMP_GT) {
+      ;
+      int diff;
+      setBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff > 0);
+      --sp;
+      exec();
+    } else if (op == opcode::CMP_LTEQ) {
+      int diff;
+      setBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff <= 0);
+      --sp;
+      exec();
+    } else if (op == opcode::CMP_GTEQ) {
+      int diff;
+      setBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff >= 0);
+      --sp;
+      exec();
+    } else if (op == opcode::CMP_3WAY) {
+      int diff;
+      if (compare(diff, sp[-1], sp[0])) {
+        setInt(sp[-1], diff);
+      } else {
+        setNull(sp[-1]);
+      }
+      --sp;
+      exec();
     }
-    ,
-    CMP_EQ,
-    CMP_GT,
-    CMP_GTEQ,
-    CMP_LT,
-    CMP_LTEQ,
     // comparisons end
+    // getters begin
+    else if (op == opcode::SET_LOCAL) {
+      int i = readPC();
+      sp[0] = bp[i];
+      exec();
+    } else if (op == opcode::SET_CLOSURE) {
+      int i = readPC();
+
+    }
+    // getters end
     else if (op == opcode::CALL) {
       call();
       return;
@@ -91,7 +127,7 @@ namespace zlt::ilisp {
       // TODO
       pc = nullptr;
       exec();
-    } else if ()
+    } else if (op = opcode::)
 
   }
 }

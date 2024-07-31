@@ -24,7 +24,21 @@ namespace zlt::ilisp {
   // cast operations end
 
   // set operations begin
-  void set
+  static inline void setNull(Var &dest) noexcept {
+    dest = std::monostate();
+  }
+
+  static inline void setInt(Var &dest, int value) noexcept {
+    dest = (double) value;
+  }
+
+  static inline void setBool(Var &dest, bool value) noexcept {
+    if (value) {
+      dest = 1;
+    } else {
+      setNull(dest);
+    }
+  }
   // set operations end
 
   bool compare(int &dest, const Var &a, const Var &b) noexcept;
