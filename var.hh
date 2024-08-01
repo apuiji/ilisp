@@ -1,6 +1,5 @@
 #pragma once
 
-#include<concepts>
 #include<string_view>
 #include<variant>
 
@@ -17,38 +16,53 @@ namespace zlt::ilisp {
 
   using Var = std::variant<std::monostate, double, const std::string *, Object *, void *>;
 
-  struct Object {
-    virtual ~Object() = default;
-  };
-
   // cast operations begin
   double toNum(const Var &var) noexcept;
-  int toInt(int &dest, const Var &var) noexcept;
-  std::string_view toStr(std::string_view &dest, const Var &var) noexcept;
-  bool toBool(const Var &var) noexcept;
 
-  template<std::derived_from<Object> T>
-  static inline T *toObj(Var &var) noexcept {
-    auto o = *(Object **) &var;
-    return static_cast<T *>(o);
+  static inline int toInt(const Var &var) noexcept {
+    return (int) toNum(var);
   }
 
-  template<std::derived_from<Object> T>
-  static inline const T *toObj(const Var &var) noexcept {
-    auto o = *(const Object **) &var;
-    return static_cast<const T *>(o);
+  std::string_view toStr(const Var &var) noexcept;
+
+  static inline bool toBool(const Var &var) noexcept {
+    return var.index() != NULL_INDEX;
   }
 
-  template<std::derived_from<Object> T>
-  static inline T *dynamicToObj(Var &var) noexcept {
-    auto o = std::get_if<Object *>(var);
-    return o ? dynamic_cast<T *>(*o) : nullptr;
+  static inline Object *getObj(Var &var) noexcept {
+    return *(Object **) &var;
   }
 
-  template<std::derived_from<Object> T>
-  static inline const T *dynamicToObj(const Var &var) noexcept {
-    auto o = std::get_if<Object *>(var);
-    return o ? dynamic_cast<const T *>(*o) : nullptr;
+  static inline const Object *getObj(const Var &var) noexcept {
+    return *(const Object **) &var;
+  }
+
+  static inline Object *getIfObj(Var &var) noexcept {
+    return var.index() == OBJ_INDEX ? getObj(var) : nullptr;
+  }
+
+  static inline const Object *getIfObj(const Var &var) noexcept {
+    return var.index() == OBJ_INDEX ? getObj(var) : nullptr;
+  }
+
+  template<class T>
+  static inline T castObj(Var &var) noexcept {
+    return static_cast<T>(getObj(var));
+  }
+
+  template<class T>
+  static inline T castObj(const Var &var) noexcept {
+    return static_cast<T>(getObj(var));
+  }
+
+  template<class T>
+  static inline T castIfObj(Var &var) noexcept {
+    return dynamic_cast<T>(getIfObj(var));
+  }
+
+  template<class T>
+  static inline T castIfObj(const Var &var) noexcept {
+    return dynamic_cast<T>(getIfObj(var));
   }
   // cast operations end
 

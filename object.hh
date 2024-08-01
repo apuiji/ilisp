@@ -4,10 +4,6 @@
 #include"var.hh"
 
 namespace zlt::ilisp {
-  struct Object {
-    virtual ~Object() = default;
-  };
-
   struct FunctionObj {
     using Closures = std::unique_ptr<Var[]>;
     Closures closures;
