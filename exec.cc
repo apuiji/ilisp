@@ -133,7 +133,17 @@ namespace zlt::ilisp {
       --sp;
     }
     // setters end
-    else if (op == opcode::CALL) {
+    else if (op == opcode::BEFORE_FORWARD) {
+      size_t argc = readPC<size_t>();
+      copy(sp - argc - 1, sp, bp - 1);
+      sp = bp + argc;
+    } else if (op == opcode::BEFORE_RETURN) {
+      bp[0] = sp[0];
+      sp = bp;
+    } else if (op == opcode::BEFORE_THROW) {
+      // TODO
+      ;
+    } else if (op == opcode::CALL) {
       call();
       return;
     } else if (op == opcode::CLEAR_FN_GUARDS) {
@@ -149,10 +159,6 @@ namespace zlt::ilisp {
       for (int i = paramc; i < defc; ++i) {
         assignNull(bp[i]);
       }
-    } else if (op == opcode::INIT_FORWARD) {
-      size_t argc = readPC<size_t>();
-      copy(sp - argc - 1, sp, bp - 1);
-      sp = bp + argc;
     } else if (op == opcode::JIF) {
       size_t n = readPC<size_t>();
       if (toBool(sp[0])) {
