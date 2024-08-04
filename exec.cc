@@ -10,33 +10,41 @@ namespace zlt::ilisp {
   using namespace global;
 
   static void call();
+  static void clearFnGuards();
 
   void exec() {
     int op = *pc;
     ++pc;
     // arithmetical operations begin
     if (op == opcode::ARITH_ADD) {
-      sp[-1] = toNum(sp[-1]) + toNum(sp[0]);
-      --sp;
+      auto p = (Var *) sp;
+      p[-1] = toNum(p[-1]) + toNum(p[0]);
+      sp -= sizeof(Var);
     } else if (op == opcode::ARITH_SUB) {
-      sp[-1] = toNum(sp[-1]) - toNum(sp[0]);
-      --sp;
+      auto p = (Var *) sp;
+      p[-1] = toNum(p[-1]) - toNum(p[0]);
+      sp -= sizeof(Var);
     } else if (op == opcode::ARITH_MUL) {
-      sp[-1] = toNum(sp[-1]) * toNum(sp[0]);
-      --sp;
+      auto p = (Var *) sp;
+      p[-1] = toNum(p[-1]) * toNum(p[0]);
+      sp -= sizeof(Var);
     } else if (op == opcode::ARITH_DIV) {
-      sp[-1] = toNum(sp[-1]) / toNum(sp[0]);
-      --sp;
+      auto p = (Var *) sp;
+      p[-1] = toNum(p[-1]) / toNum(p[0]);
+      sp -= sizeof(Var);
     } else if (op == opcode::ARITH_MOD) {
-      sp[-1] = fmod(toNum(sp[-1]), toNum(sp[0]));
-      --sp;
+      auto p = (Var *) sp;
+      p[-1] = fmod(toNum(p[-1]), toNum(p[0]));
+      sp -= sizeof(Var);
     } else if (op == opcode::ARITH_POW) {
-      sp[-1] = pow(toNum(sp[-1]), toNum(sp[0]));
-      --sp;
+      auto p = (Var *) sp;
+      p[-1] = pow(toNum(p[-1]), toNum(p[0]));
+      sp -= sizeof(Var);
     }
     // arithmetical operations end
     // logical operations end
     else if (op == opcode::LOGIC_NOT) {
+      auto p = (Var *) sp;
       assignBool(sp[0], !toBool(sp[0]));
     } else if (op == opcode::LOGIC_XOR) {
       assignBool(sp[-1], toBool(sp[-1]) ^ toBool(sp[0]));
@@ -139,7 +147,7 @@ namespace zlt::ilisp {
       sp = bp + argc;
     } else if (op == opcode::BEFORE_RETURN) {
       bp[0] = sp[0];
-      sp = bp;
+      sp = bp + 1;
     } else if (op == opcode::BEFORE_THROW) {
       // TODO
       ;
@@ -148,8 +156,8 @@ namespace zlt::ilisp {
       return;
     } else if (op == opcode::CLEAR_FN_GUARDS) {
       pushPtr(pc);
-      // TODO
-      pc = nullptr;
+      clearFnGuards();
+      return;
     } else if (op == opcode::INIT_DEFC) {
       size_t paramc = readPC<size_t>();
       size_t defc = readPC<size_t>();
