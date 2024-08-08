@@ -10,11 +10,10 @@ namespace zlt::ilisp {
     NULL_INDEX,
     NUM_INDEX,
     STR_INDEX,
-    OBJ_INDEX,
-    PTR_INDEX
+    OBJ_INDEX
   };
 
-  using Var = std::variant<std::monostate, double, const std::string *, Object *, void *>;
+  using Var = std::variant<std::monostate, double, const std::string *, Object *>;
 
   // cast operations begin
   double toNum(const Var &var) noexcept;
@@ -63,42 +62,6 @@ namespace zlt::ilisp {
   template<class T>
   static inline T castIfObj(const Var &var) noexcept {
     return dynamic_cast<T>(getIfObj(var));
-  }
-
-  static inline void *getPtr(Var &var) noexcept {
-    return *(void **) &var;
-  }
-
-  static inline const void *getPtr(const Var &var) noexcept {
-    return *(const void **) &var;
-  }
-
-  static inline void *getIfPtr(Var &var) noexcept {
-    return var.index() == PTR_INDEX ? getPtr(var) : nullptr;
-  }
-
-  static inline const void *getIfPtr(const Var &var) noexcept {
-    return var.index() == PTR_INDEX ? getPtr(var) : nullptr;
-  }
-
-  template<class T>
-  static inline T castPtr(Var &var) noexcept {
-    return (T) getPtr(var);
-  }
-
-  template<class T>
-  static inline T castPtr(const Var &var) noexcept {
-    return (T) getPtr(var);
-  }
-
-  template<class T>
-  static inline T castIfPtr(Var &var) noexcept {
-    return (T) getIfPtr(var);
-  }
-
-  template<class T>
-  static inline T castIfPtr(const Var &var) noexcept {
-    return (T) getIfPtr(var);
   }
   // cast operations end
 

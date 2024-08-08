@@ -4,8 +4,12 @@
 #include"var.hh"
 
 namespace zlt::ilisp::global {
-  extern char *bp;
-  extern char *sp;
+  extern void *bp;
+  extern void *sp;
+
+  static inline Var *&vbp = *(Var **) &bp;
+  static inline Var *&vsp = *(Var **) &sp;
+
   extern const char *pc;
   extern std::map<const std::string *, Var> defs;
 

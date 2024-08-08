@@ -17,137 +17,130 @@ namespace zlt::ilisp {
     ++pc;
     // arithmetical operations begin
     if (op == opcode::ARITH_ADD) {
-      auto p = (Var *) sp;
-      p[-1] = toNum(p[-1]) + toNum(p[0]);
-      sp -= sizeof(Var);
+      vsp[-1] = toNum(vsp[-1]) + toNum(vsp[0]);
+      --vsp;
     } else if (op == opcode::ARITH_SUB) {
-      auto p = (Var *) sp;
-      p[-1] = toNum(p[-1]) - toNum(p[0]);
-      sp -= sizeof(Var);
+      vsp[-1] = toNum(vsp[-1]) - toNum(vsp[0]);
+      --vsp;
     } else if (op == opcode::ARITH_MUL) {
-      auto p = (Var *) sp;
-      p[-1] = toNum(p[-1]) * toNum(p[0]);
-      sp -= sizeof(Var);
+      vsp[-1] = toNum(vsp[-1]) * toNum(vsp[0]);
+      --vsp;
     } else if (op == opcode::ARITH_DIV) {
-      auto p = (Var *) sp;
-      p[-1] = toNum(p[-1]) / toNum(p[0]);
-      sp -= sizeof(Var);
+      vsp[-1] = toNum(vsp[-1]) / toNum(vsp[0]);
+      --vsp;
     } else if (op == opcode::ARITH_MOD) {
-      auto p = (Var *) sp;
-      p[-1] = fmod(toNum(p[-1]), toNum(p[0]));
-      sp -= sizeof(Var);
+      vsp[-1] = fmod(toNum(vsp[-1]), toNum(vsp[0]));
+      --vsp;
     } else if (op == opcode::ARITH_POW) {
-      auto p = (Var *) sp;
-      p[-1] = pow(toNum(p[-1]), toNum(p[0]));
-      sp -= sizeof(Var);
+      vsp[-1] = pow(toNum(vsp[-1]), toNum(vsp[0]));
+      --vsp;
     }
     // arithmetical operations end
     // logical operations end
     else if (op == opcode::LOGIC_NOT) {
-      auto p = (Var *) sp;
-      assignBool(sp[0], !toBool(sp[0]));
+      assignBool(vsp[0], !toBool(vsp[0]));
     } else if (op == opcode::LOGIC_XOR) {
-      assignBool(sp[-1], toBool(sp[-1]) ^ toBool(sp[0]));
-      --sp;
+      assignBool(vsp[-1], toBool(vsp[-1]) ^ toBool(vsp[0]));
+      --vsp;
     }
     // logical operations end
     // bitwise operations begin
     else if (op == opcode::BITWS_AND) {
-      assignInt(sp[-1], toInt(sp[-1]) & toInt(sp[0]));
-      --sp;
+      assignInt(vsp[-1], toInt(vsp[-1]) & toInt(vsp[0]));
+      --vsp;
     } else if (op == opcode::BITWS_OR) {
-      assignInt(sp[-1], toInt(sp[-1]) | toInt(sp[0]));
-      --sp;
+      assignInt(vsp[-1], toInt(vsp[-1]) | toInt(vsp[0]));
+      --vsp;
     } else if (op == opcode::BITWS_NOT) {
-      assignInt(sp[0], ~toInt(sp[0]));
+      assignInt(vsp[0], ~toInt(vsp[0]));
     } else if (op == opcode::BITWS_XOR) {
-      assignInt(sp[-1], toInt(sp[-1]) ^ toInt(sp[0]));
-      --sp;
+      assignInt(vsp[-1], toInt(vsp[-1]) ^ toInt(vsp[0]));
+      --vsp;
     } else if (op == opcode::LSH) {
-      assignInt(sp[-1], toInt(sp[-1]) << toInt(sp[0]));
-      --sp;
+      assignInt(vsp[-1], toInt(vsp[-1]) << toInt(vsp[0]));
+      --vsp;
     } else if (op == opcode::RSH) {
-      assignInt(sp[-1], toInt(sp[-1]) >> toInt(sp[0]));
-      --sp;
+      assignInt(vsp[-1], toInt(vsp[-1]) >> toInt(vsp[0]));
+      --vsp;
     } else if (op == opcode::USH) {
-      assignInt(sp[-1], (unsigned) toInt(sp[-1]) >> toInt(sp[0]));
-      --sp;
+      assignInt(vsp[-1], (unsigned) toInt(vsp[-1]) >> toInt(vsp[0]));
+      --vsp;
     }
     // bitwise operations end
     // comparisons begin
     else if (op == opcode::CMP_EQ) {
       int diff;
-      assignBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff == 0);
-      --sp;
+      assignBool(vsp[-1], compare(diff, vsp[-1], vsp[0]) && diff == 0);
+      --vsp;
     } else if (op == opcode::CMP_LT) {
       int diff;
-      assignBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff < 0);
-      --sp;
+      assignBool(vsp[-1], compare(diff, vsp[-1], vsp[0]) && diff < 0);
+      --vsp;
     } else if (op == opcode::CMP_GT) {
       int diff;
-      assignBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff > 0);
-      --sp;
+      assignBool(vsp[-1], compare(diff, vsp[-1], vsp[0]) && diff > 0);
+      --vsp;
     } else if (op == opcode::CMP_LTEQ) {
       int diff;
-      assignBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff <= 0);
-      --sp;
+      assignBool(vsp[-1], compare(diff, vsp[-1], vsp[0]) && diff <= 0);
+      --vsp;
     } else if (op == opcode::CMP_GTEQ) {
       int diff;
-      assignBool(sp[-1], compare(diff, sp[-1], sp[0]) && diff >= 0);
-      --sp;
+      assignBool(vsp[-1], compare(diff, vsp[-1], vsp[0]) && diff >= 0);
+      --vsp;
     } else if (op == opcode::CMP_3WAY) {
       int diff;
-      if (compare(diff, sp[-1], sp[0])) {
-        assignInt(sp[-1], diff);
+      if (compare(diff, vsp[-1], vsp[0])) {
+        assignInt(vsp[-1], diff);
       } else {
-        assignNull(sp[-1]);
+        assignNull(vsp[-1]);
       }
-      --sp;
+      --vsp;
     }
     // comparisons end
     // getters begin
     else if (op == opcode::GET_LOCAL) {
       int i = readPC<int>();
-      sp[0] = bp[i];
+      vsp[0] = vbp[i];
     } else if (op == opcode::GET_CLOSURE) {
       int i = readPC<int>();
-      sp[0] = castObj<FunctionObj *>(bp[-1])->closures[i];
+      vsp[0] = castObj<FunctionObj *>(vbp[-1])->closures[i];
     } else if (op == opcode::GET_GLOBAL) {
       auto name = readPC<const string *>();
-      sp[0] = global::defs[name];
+      vsp[0] = global::defs[name];
     } else if (op == opcode::GET_MEMB) {
-      sp[-1] = getMemb(sp[-1], sp[0]);
-      --sp;
+      vsp[-1] = getMemb(vsp[-1], vsp[0]);
+      --vsp;
     } else if (op == opcode::GET_REF) {
-      sp[0] = *castPtr<Var *>(sp[0]);
+      vsp[0] = castObj<ReferenceObj *>(vsp[0])->value;
     }
     // getters end
     // setters begin
     else if (op == opcode::SET_LOCAL) {
       int i = readPC<int>();
-      bp[i] = sp[0];
+      vbp[i] = vsp[0];
     } else if (op == opcode::SET_CLOSURE) {
       int i = readPC<int>();
-      castObj<FunctionObj *>(bp[-1])->closures[i] = sp[0];
+      castObj<FunctionObj *>(vbp[-1])->closures[i] = vsp[0];
     } else if (op == opcode::SET_GLOBAL) {
       auto name = readPC<const string *>();
-      global::defs[name] = sp[0];
+      global::defs[name] = vsp[0];
     } else if (op == opcode::SET_MEMB) {
-      setMemb(sp[-2], sp[-1], sp[0]);
-      sp[-2] = sp[0];
-      sp -= 2;
+      setMemb(vsp[-2], vsp[-1], vsp[0]);
+      vsp[-2] = vsp[0];
+      vsp -= 2;
     } else if (op == opcode::SET_REF) {
-      *castPtr<Var *>(sp[-1]) = sp[0];
-      --sp;
+      castObj<ReferenceObj *>(vsp[-1])->value = vsp[0];
+      --vsp;
     }
     // setters end
     else if (op == opcode::BEFORE_FORWARD) {
       size_t argc = readPC<size_t>();
-      copy(sp - argc - 1, sp, bp - 1);
-      sp = bp + argc;
+      copy(vsp - argc - 1, vsp, vbp - 1);
+      vsp = vbp + argc;
     } else if (op == opcode::BEFORE_RETURN) {
-      bp[0] = sp[0];
-      sp = bp + 1;
+      vbp[0] = vsp[0];
+      vsp = vbp;
     } else if (op == opcode::BEFORE_THROW) {
       // TODO
       ;
