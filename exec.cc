@@ -140,7 +140,7 @@ namespace zlt::ilisp {
       vsp = vbp + argc;
     } else if (op == opcode::BEFORE_RETURN) {
       vbp[0] = vsp[0];
-      vsp = vbp;
+      vsp = vbp + 1;
     } else if (op == opcode::BEFORE_THROW) {
       // TODO
       ;
