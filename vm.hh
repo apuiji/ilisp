@@ -28,4 +28,6 @@ namespace zlt::ilisp::vm {
   static inline T readT() noexcept {
     return *(const T *) read(sizeof(T));
   }
+
+  void exec();
 }

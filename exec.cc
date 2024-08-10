@@ -2,15 +2,12 @@
 #include<cstring>
 #include"commons/opcode.hh"
 #include"global.hh"
-#include"ilisp.hh"
 #include"object.hh"
 #include"vm.hh"
 
 using namespace std;
 
-namespace zlt::ilisp {
-  using namespace vm;
-
+namespace zlt::ilisp::vm {
   void exec() {
     int op = *pc;
     ++pc;
